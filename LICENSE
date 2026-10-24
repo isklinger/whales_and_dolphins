@@ -1,6 +1,9 @@
-MIT License
+The most strict GBIF data license is CC BY NC 4.0, err on the side of caution
+by treating any GBIF data as available under that license. Some of the data is
+licensed under the less-strict CC0 and CC BY 4.0
 
-Copyright (c) 2026 isaac klinger
+Python files copyright (c) 2026 Isaac Klinger
+Released under the MIT License
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
