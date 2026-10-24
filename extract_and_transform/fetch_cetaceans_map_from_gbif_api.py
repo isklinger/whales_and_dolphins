@@ -57,9 +57,10 @@ uk_eez_polygon = shapely.to_wkt(
 
 # GBIF requires polygons with 10,000 or fewer vertices
 # Simplify EEZ polygon
+vertex_limit = 10000
 if shapely.get_num_points(
             shapely.geometry.Polygon(
-                shapely.from_wkt(uk_eez_polygon))) >= 10000: # type: ignore
+                shapely.from_wkt(uk_eez_polygon))) >= vertex_limit: # type: ignore
     coord_tolerance = [1*10**-5, 5*10**-5, 1*10**-4, 5*10**-4, 1*10**-3]
     while len(coord_tolerance) > 0:
         uk_eez_polygon = shapely.to_wkt(shapely.geometry.Polygon(
@@ -70,7 +71,7 @@ if shapely.get_num_points(
                                 )).exterior)) # type: ignore
 if shapely.get_num_points(
             shapely.geometry.Polygon(
-                shapely.from_wkt(uk_eez_polygon))) >= 10000: # type: ignore
+                shapely.from_wkt(uk_eez_polygon))) >= vertex_limit: # type: ignore
     error_message='''Couldn't meet GBIF geometry vertex requirements.'''
     print(error_message)
     raise Exception(error_message)
