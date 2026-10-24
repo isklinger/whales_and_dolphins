@@ -83,7 +83,7 @@ else:
          polygon_file.write(gb_polygon)
 
 
-# Buffer GB polygon out into the seas
+# Buffer GB polygon out into the seas by 0.8 of a degree
 gb_polygon_buffer = shapely.buffer(
                         shapely.geometry.Polygon(
                             shapely.from_wkt(gb_polygon)).exterior, # type: ignore

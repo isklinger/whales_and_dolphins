@@ -1,5 +1,6 @@
 import os
 import zipfile
+import duckdb
 from dotenv import load_dotenv
 from pygbif import occurrences
 
@@ -29,3 +30,46 @@ occurrences.download_get(pgbif_key)
 
 with zipfile.ZipFile(pgbif_key + '.zip', 'r') as zip_ref:
     zip_ref.extractall('.')
+
+# Connect to 'gbif_cetaceans_great_britain.db'
+duck = duckdb.connect('../load_and_model/gbif_cetaceans_great_britain.db')
+# (don't) describe the CSV table...
+describe = duck.execute('''describe select * from read_csv(''' + """'""" + pgbif_key + '''.csv')''').fetchall()
+#print(describe)
+
+# create a table, select some columns from the CSV, put the selected columns in the table
+duck.execute('''
+drop table if exists cetaceans_gb;
+create table cetaceans_gb as
+(
+with
+left_table as (
+select gbifID,
+       species,
+       locality,
+       stateProvince,
+       individualCount,
+       decimalLatitude as latitude,
+       decimalLongitude as longitude,
+       eventDate as date,
+       day,
+       month,
+       year,
+       dateIdentified
+from read_csv(''' + """'""" + pgbif_key + '''.csv')
+)
+
+, right_table as (
+select commonName, scientificName
+from read_csv('../load_and_model/species_dictionary.csv')
+)
+
+select left_table.*, right_table.commonName
+from left_table
+left join right_table
+on left_table.species = right_table.scientificName
+)
+''')
+duck.close()
+
+print('''Data loaded! Take a look in the "load_and_model" path.''')
