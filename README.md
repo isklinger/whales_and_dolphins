@@ -14,9 +14,9 @@ Requires a free [GBIF](https://www.gbif.org/) account.
 git clone https://github.com/isklinger/whales_and_dolphins
 
 cd whales_and_dolphins
-python -m venv .venv
+python3 -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 
 cp gazeteer_credentials.env.example ../gazeteer_credentials.env
 # ...and update gazeteer_credentials.env with your credentials
@@ -32,7 +32,7 @@ streamlit run app/app.py
 
 ## Databases
 
-| source | query | credentials requirement | data wrangling |
+| source | query | credentials requirements | data wrangling |
 |:-:|---|:-:|---|
 |[GBIF](https://techdocs.gbif.org/en/openapi/)|sightings of cetaceans limited by year and polygon|free account|API requires a simplified polygon with at most a few hundred vertices|
 |[Marine Regions]( https://www.marineregions.org/gazetteer.php?p=webservices&type=rest)|(multi-)polygon by name|none|provides a multi-polygon, which I converted to a polygon and supplemented with a buffer
@@ -50,3 +50,11 @@ Generally CC-BY-NC 4.0, some entries are under less strict licenses
 [Marine Regions](https://www.marineregions.org/gazetteer.php?p=webservices&type=rest)  
 A standard list of marine georeferenced place names and areas  
 CC-BY 4.0
+
+## About me
+
+Hi, I'm Isaac. I moved to London in early 2025, where I'm living with my wonderful wife who grew up in London.
+
+I've been using python for personal projects for many years. After attending a meetup at The Data School in mid-2026, I delved deeper into dbt and data analysis. I enjoy the modular and structured source-model-test design concept of dbt. Its clean design reminds me of the concepts behind python's syntax. I enjoy the visual and technical aspects of data analysis.
+
+I'm employed as a datacenter system adminstrator for a company based in Soho, keeping installations of Debian, Nginx, Apache, MariaDB, and the sort humming along.
