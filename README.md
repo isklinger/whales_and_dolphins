@@ -34,7 +34,7 @@ streamlit run app/app.py
 
 ## License
 
-Python code © Isaac Klinger
+Python code © Isaac Klinger  
 Released under the [MIT](https://choosealicense.com/licenses/mit/)
 
 GBIF - Global Biodiversity Information Facility  
