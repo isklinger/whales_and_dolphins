@@ -2,9 +2,7 @@
 
 View a selection of holiday destinations ranked by nearby cetacean sightings, with some statistics.
 
-## Who is it for
-
-Would-be holidaymakers planning whale- and dolphin-watching for their next holiday.
+If you're planning whale- and dolphin-watching for your next holiday, this is for you!
 
 ## Usage
 
@@ -32,16 +30,23 @@ python3 load_gbif_data_to_duckdb.py
 streamlit run app/app.py
 ```
 
+## Databases
+
+| source | query | access | data wrangling |
+|---|---|---|---|
+|[GBIF](https://techdocs.gbif.org/en/openapi/)|sightings of cetaceans limited by year and polygon|free account|API requires a simplified polygon with at most a few hundred vertices|
+|[Marine Regions]( https://www.marineregions.org/gazetteer.php?p=webservices&type=rest)|(multi)polygon by name|free|provides multi-polygon, which I converted to polygon
+
 ## License
 
 Python code © Isaac Klinger  
 Released under the [MIT](https://choosealicense.com/licenses/mit/)
 
-GBIF - Global Biodiversity Information Facility  
+[GBIF - Global Biodiversity Information Facility](https://techdocs.gbif.org/en/openapi/  
+)  
 Free and open access to biodiversity data  
-https://techdocs.gbif.org/en/openapi/  
 Generally CC-BY-NC 4.0, some entries are under less strict licenses
 
-Marine Regions - a standard list of marine georeferenced place names and areas  
-https://www.marineregions.org/gazetteer.php?p=webservices&type=rest  
+[Marine Regions](https://www.marineregions.org/gazetteer.php?p=webservices&type=rest)  
+A standard list of marine georeferenced place names and areas  
 CC-BY 4.0
