@@ -1,5 +1,6 @@
 import requests
 import shapely
+import os
 from dotenv import load_dotenv
 from pygbif import occurrences, species
 
@@ -32,6 +33,12 @@ GBIF_EMAIL = email
 """
 load_dotenv("../../gbif_credentials.env")
 
+# Please specify an email address for Gazetteer requests
+"""
+GAZETEER_EMAIL = email
+"""
+load_dotenv("../../gazeteer_credentials.env")
+
 # Fetch the British Exclusive Economic Zone polygon from Gazetteer
 # https://www.marineregions.org/gazetteer.php?p=webservices&type=rest
 gazeteer_record_name = "British Exclusive Economic Zone"
@@ -39,7 +46,7 @@ gazeteer_mrgid = requests.get(
     "https://marineregions.org/rest/getGazetteerRecordsByNames.json/false/false/"
     + gazeteer_record_name
     + "/{name 2}/{name 3}/",
-    headers = {'User-Agent': 'isaac@juniordataexpert.com'},
+    headers = {'User-Agent': os.environ['GAZETEER_EMAIL']},
     timeout=30,
 ).json()[0][0]["MRGID"]
 # gazeteer_mrgid = '5696'
@@ -48,7 +55,7 @@ uk_eez_polygon = requests.get(
     "https://marineregions.org/rest/getGazetteerGeometries.jsonld/"
     + str(gazeteer_mrgid)
     + "/",
-    headers = {'User-Agent': 'isaac@juniordataexpert.com'},
+    headers = {'User-Agent': os.environ['GAZETEER_EMAIL']},
     timeout=30,
 ).json()["mr:hasGeometry"][0]["gsp:asWKT"][47:]
 # Honestly, we don't need all the holes in the polygon.
