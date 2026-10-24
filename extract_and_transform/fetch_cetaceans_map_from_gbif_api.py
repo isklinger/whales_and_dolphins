@@ -45,23 +45,36 @@ gazeteer_mrgid = requests.get(
 
 uk_eez_polygon = requests.get(
     "https://marineregions.org/rest/getGazetteerGeometries.jsonld/"
-    + gazeteer_mrgid
+    + str(gazeteer_mrgid)
     + "/",
     timeout=30,
 ).json()["mr:hasGeometry"][0]["gsp:asWKT"][47:]
-# Imagine there's a block of code here that checks the number of vertices,
-# instead of me manually counting field separators.
-# 349,969 vertices... oof. GBIF accepts a maximum of 10,000
-# Simplify EEZ polygon, less vertices and no holes
+# Honestly, we don't need all the holes in the polygon.
+# If there are Ceteceans on land, we definitely want to see them!
 uk_eez_polygon = shapely.to_wkt(
-                    shapely.geometry.Polygon(
-                        shapely.simplify(
-                            shapely.from_wkt(uk_eez_polygon),
-                                             tolerance=0.005
-                                        ).exterior.coords))
-# Imagine we've verified the simplified polygon number of vertices is less-or-equal to 10000
-# And honestly, we don't need all the holes in the polygon. If there are Ceteceans on land,
-# we definitely want to see them!
+    shapely.geometry.Polygon(
+        shapely.from_wkt(uk_eez_polygon)).exterior)
+
+# GBIF requires polygons with 100000 or fewer vertices
+# Simplify EEZ polygon
+if shapely.get_num_points(
+            shapely.geometry.Polygon(
+                shapely.from_wkt(uk_eez_polygon))) >= 100000: # type: ignore
+    coord_tolerance = [1*10**-5, 5*10**-5, 1*10**-4, 5*10**-4, 1*10**-3]
+    while len(coord_tolerance) > 0:
+        uk_eez_polygon = shapely.to_wkt(shapely.geometry.Polygon(
+            shapely.geometry.Polygon(
+                shapely.simplify(
+                    shapely.from_wkt(uk_eez_polygon),
+                                     tolerance=coord_tolerance.pop(0)
+                                )).exterior)) # type: ignore
+if shapely.get_num_points(
+            shapely.geometry.Polygon(
+                shapely.from_wkt(uk_eez_polygon))) >= 100000: # type: ignore
+    error_message='''Couldn't meet GBIF geometry vertex requirements.'''
+    print(error_message)
+    raise Exception(error_message)
+
 
 # dict of species belonging to the infraorder Cetacea
 # that are more commonly observed around the shores of Great Britain.
