@@ -22,7 +22,7 @@ if load_dotenv('../../gbif_credentials.env') is False:
     print(error_message)
     raise Exception(error_message)
 
-gbif_key_filename = 'gbif_download_key.txt'
+gbif_key_filename = '../data/raw/gbif_download_key.txt'
 with open(gbif_key_filename, 'r') as pgbif_key_file:
     pgbif_key = pgbif_key_file.read()
 
@@ -32,7 +32,7 @@ with zipfile.ZipFile(pgbif_key + '.zip', 'r') as zip_ref:
     zip_ref.extractall('.')
 
 # Connect to 'gbif_cetaceans_great_britain.db'
-duck = duckdb.connect('../load_and_model/gbif_cetaceans_great_britain.db')
+duck = duckdb.connect('../data/raw/gbif_cetaceans_great_britain.db')
 # (don't) describe the CSV table...
 describe = duck.execute('''describe select * from read_csv(''' + """'""" + pgbif_key + '''.csv')''').fetchall()
 #print(describe)
@@ -61,7 +61,7 @@ from read_csv(''' + """'""" + pgbif_key + '''.csv')
 
 , right_table as (
 select commonName, scientificName
-from read_csv('../load_and_model/species_dictionary.csv')
+from read_csv('../data/raw/species_dictionary.csv')
 )
 
 select left_table.*, right_table.commonName

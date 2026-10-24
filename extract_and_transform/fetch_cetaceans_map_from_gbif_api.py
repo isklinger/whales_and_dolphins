@@ -49,7 +49,7 @@ if load_dotenv('../../gazeteer_credentials.env') is False:
     raise Exception(error_message)
 
 # Check if there's a local copy of the polygon data, otherwise request and save data
-polygon_filename='great_britain_polygon.wkt'
+polygon_filename='../data/raw/great_britain_polygon.wkt'
 if os.path.isfile(polygon_filename) and os.access(polygon_filename, os.R_OK):
     with open(polygon_filename, 'r') as polygon_file:
         gb_polygon = polygon_file.read()
@@ -141,7 +141,7 @@ gbif_download_info = occurrences.download(['taxonKey = ' + str(cetacea_taxon_key
 # 
 if gbif_download_info[0][0:2] == '00':
     # very unreliable way to check whether the download key has been retrieved
-    gbif_key_filename = 'gbif_download_key.txt'
+    gbif_key_filename = '../data/raw/gbif_download_key.txt'
     with open(gbif_key_filename, 'w') as pgbif_key_file:
          pgbif_key_file.write(gbif_download_info[0])
     print('''
