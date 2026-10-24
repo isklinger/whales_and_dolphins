@@ -1,0 +1,4 @@
+duckdb==2.0.0
+pygbif==0.7.0
+dotenv==0.9.9
+shapely==2.2.0
