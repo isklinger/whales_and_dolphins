@@ -1,6 +1,8 @@
-The most strict GBIF data license is CC BY NC 4.0, err on the side of caution
-by treating any GBIF data as available under that license. Some of the data is
-licensed under the less-strict CC0 and CC BY 4.0
+The strictest GBIF data license is CC BY NC 4.0, it's safe to err on the side
+of caution by treating any GBIF data as available under that license. Some of
+the data is licensed under the less-strict CC0 and CC BY 4.0
+
+Gazetteer data is released under the CC BY 4.0 license
 
 Python files copyright (c) 2026 Isaac Klinger
 Released under the MIT License
