@@ -32,10 +32,10 @@ streamlit run app/app.py
 
 ## Databases
 
-| source | query | access | data wrangling |
-|---|---|---|---|
+| source | query | credentials requirement | data wrangling |
+|:-:|---|:-:|---|
 |[GBIF](https://techdocs.gbif.org/en/openapi/)|sightings of cetaceans limited by year and polygon|free account|API requires a simplified polygon with at most a few hundred vertices|
-|[Marine Regions]( https://www.marineregions.org/gazetteer.php?p=webservices&type=rest)|(multi)polygon by name|free|provides multi-polygon, which I converted to polygon
+|[Marine Regions]( https://www.marineregions.org/gazetteer.php?p=webservices&type=rest)|(multi-)polygon by name|none|provides a multi-polygon, which I converted to a polygon and supplemented with a buffer
 
 ## License
 
