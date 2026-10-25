@@ -49,9 +49,9 @@ The Marine Regions database is queried for the geospatial polygon of the island 
 
 #### GBIF
 - The data from GBIF is generally complete and consistent. 
-- I preselected, using the query from the GBIF database, rows without geospatial issues
+- I preselected, using the query from the GBIF database, rows without geospatial issues.
 - There are clear data sampling artifacts like coordinates arranged neatly along a radius, but this spatial (in)accuracy is sufficiently small for general whale-watching purposes in open seas.
-- Very few values have user-submitted info in the wrong field, which I detected and removed by selecting distinct values and looking for outliers.
+- Very few values have user-submitted info in the wrong field, which I detected and removed by selecting distinct values for specific columns and looking for outliers.
 
 #### Marine Regions
 
@@ -66,7 +66,7 @@ The Marine Regions database is queried for the geospatial polygon of the island 
 
 ## Possible enhancements (What I would do next)
 
-- See [freshness and updates section](#Freshness_and_updates)
+- See [freshness and updates section](#freshness-and-updates)
 - Include more species, specifically popular birds and national park wildlife. Categorise views by activity: birdwatching, boat tour, hiking.
 - Provide data about local related business and national parks.
 - Use custom tiles that include more interesting and pertinent information in the tile layer itself: [Dynamic Tile Service](https://github.com/federicotallis/Duckdb_Dynamic_Tile_Service/blob/main/Streamlit/app.py)
