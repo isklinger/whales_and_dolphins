@@ -32,10 +32,23 @@ streamlit run app/app.py
 
 ## Databases
 
-| source | query | credentials requirements | data wrangling |
+| source | query | credentials requirements | data shaping |
 |:-:|---|:-:|---|
-|[GBIF](https://techdocs.gbif.org/en/openapi/)|sightings of cetaceans limited by year and polygon|free account|API requires a simplified polygon with at most a few hundred vertices|
-|[Marine Regions]( https://www.marineregions.org/gazetteer.php?p=webservices&type=rest)|(multi-)polygon by name|none|provides a multi-polygon, which I converted to a polygon and supplemented with a buffer
+|[GBIF](https://techdocs.gbif.org/en/openapi/)|sightings of cetaceans limited by year and polygon|free account|the query provides many columns that aren't used by the marts, so I didn't select them when loading into the local database|
+|[Marine Regions]( https://www.marineregions.org/gazetteer.php?p=webservices&type=rest)|(multi-)polygon by name|none|the query provides a multi-polygon, which I converted to a polygon and supplemented with a buffer|
+
+## Data shaping
+
+The data from GBIF is generally complete and correct. Very few values have user-submitted info in the wrong field which can be detected by selecting distinct values and looking for outliers.
+
+The data from Marine Regions is accurate and correct, but the polygons have to be simplified locally since they are too detailed to be used with the GBIF API. 
+
+
+## Possible enhancements
+
+- More species, specifically popular birds and national park wildlife. Categorise views by activity: birdwatching, boat tour, hiking.
+- Data about local related business and national parks
+- Use custom tiles that include more interesting and pertinent information in the tile layer itself: [Dynamic Tile Service](https://github.com/federicotallis/Duckdb_Dynamic_Tile_Service/blob/main/Streamlit/app.py)
 
 ## License
 
