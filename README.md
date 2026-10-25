@@ -97,11 +97,11 @@ Released under the MIT license
 [GBIF - Global Biodiversity Information Facility](https://techdocs.gbif.org/en/openapi/  
 )  
 Free and open access to biodiversity data  
-Generally CC-BY-NC 4.0, some entries are under less strict licenses
+Most entries released under the CC-BY-NC 4.0 license, some entries are under less strict licenses
 
 [Marine Regions](https://www.marineregions.org/gazetteer.php?p=webservices&type=rest)  
 A standard list of marine georeferenced place names and areas  
-CC-BY 4.0
+Released under the CC-BY 4.0 license
 
 ## About me
 
