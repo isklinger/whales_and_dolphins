@@ -25,11 +25,13 @@ cp gazeteer_credentials.env.example ../gazeteer_credentials.env
 cp gbif_credentials.env.example ../gbif_credentials.env
 # gbif - requires username, password, and email
 
-# extract, transform, and load!
+# extract, transform, load
 python3 extract_and_transform/query_api.py
 # you will be prompted to wait until you receive an email from GBIF saying the download is ready
 python3 extract_and_transform/load.py
-streamlit run streamlit.py
+
+# run the app
+streamlit run app/streamlit.py
 ```
 
 ## Databases (How it works)
