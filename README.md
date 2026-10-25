@@ -56,7 +56,7 @@ The Marine Regions database is queried for the geospatial polygon of the island 
 
 #### Marine Regions
 
-- The data from Marine Regions is, for the purposes of this project, completely accurate and correct or the "ground truth".
+- The data from Marine Regions is, for the purposes of this project, completely accurate and correct, or the "ground truth".
 - I simplified the polygons returned by the database since they are too detailed to be used with the GBIF API. 
 
 ### Transforming:
