@@ -1,6 +1,7 @@
 import requests
 import shapely
 import os
+from pathlib import Path
 from dotenv import load_dotenv
 from pygbif import occurrences, species
 
@@ -34,7 +35,8 @@ GBIF_USER = user
 GBIF_PWD = password
 GBIF_EMAIL = email
 """
-if load_dotenv('../../gbif_credentials.env') is False:
+gbif_credentials  = Path(__file__).parent.parent.parent / 'gbif_credentials.env'
+if load_dotenv(gbif_credentials) is False:
     error_message='''Couldn't load GBIF credentials.'''
     print(error_message)
     raise Exception(error_message)
@@ -43,13 +45,14 @@ if load_dotenv('../../gbif_credentials.env') is False:
 """
 GAZETEER_EMAIL = email
 """
-if load_dotenv('../../gazeteer_credentials.env') is False:
+gazeteer_credentials  = Path(__file__).parent.parent.parent / 'gazeteer_credentials.env'
+if load_dotenv(gazeteer_credentials) is False:
     error_message='''Couldn't load Gazeteer credentials.'''
     print(error_message)
     raise Exception(error_message)
 
 # Check if there's a local copy of the polygon data, otherwise request and save data
-polygon_filename='../data/raw/great_britain_polygon.wkt'
+polygon_filename = Path(__file__).parent.parent / 'data/raw/great_britain_polygon.wkt'
 if os.path.isfile(polygon_filename) and os.access(polygon_filename, os.R_OK):
     with open(polygon_filename, 'r') as polygon_file:
         gb_polygon = polygon_file.read()
@@ -138,10 +141,10 @@ gbif_download_info = occurrences.download(['taxonKey = ' + str(cetacea_taxon_key
                                            'hasCoordinate = True',
                                            'hasGeospatialIssue = False',
                                            'year = 2020,2025'])
-# 
+
 if gbif_download_info[0][0:2] == '00':
     # very unreliable way to check whether the download key has been retrieved
-    gbif_key_filename = '../data/raw/gbif_download_key.txt'
+    gbif_key_filename = Path(__file__).parent  / 'data/raw/gbif_download_key.txt'
     with open(gbif_key_filename, 'w') as pgbif_key_file:
          pgbif_key_file.write(gbif_download_info[0])
     print('''

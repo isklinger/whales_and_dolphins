@@ -9,25 +9,26 @@ If you're planning whale- and dolphin-watching for your next holiday, this is fo
 Tested in Python 3.14  
 Requires a free [GBIF](https://www.gbif.org/) account.
 
-
 ```bash
+# clone
 git clone https://github.com/isklinger/whales_and_dolphins
 
+# set up python virtual environment
 cd whales_and_dolphins
 python3 -m venv .venv
 source .venv/bin/activate
 pip3 install -r requirements.txt
 
+# set up credentials
 cp gazeteer_credentials.env.example ../gazeteer_credentials.env
-# ...and update gazeteer_credentials.env with your credentials
+# gazeteer - email optional
 cp gbif_credentials.env.example ../gbif_credentials.env
-# ...and update gbif_credentials.env with your credentials
+# gbif - requires username, password, and email
 
-cd extract_and_transform
-python3 fetch_cetaceans_map_from_gbif_api.py
+# extract, transform, and load!
+python3 extract_and_transform/fetch_cetaceans_map_from_gbif_api.py
 # you will be prompted to wait until you receive an email from GBIF saying the download is ready
-python3 load_gbif_data_to_duckdb.py
-cd ../app
+python extract_and_transform/load_gbif_data_to_duckdb.py
 streamlit run streamlit.py
 ```
 
