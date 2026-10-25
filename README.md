@@ -1,10 +1,10 @@
-# Cetacean Holiday
+# Cetacean Holiday (What I built and who for)
 
 View a selection of holiday destinations ranked by nearby cetacean sightings, with some statistics.
 
 If you're planning whale- and dolphin-watching for your next holiday, this is for you!
 
-## Usage
+## Usage (How to run it)
 
 Tested in Python 3.14  
 Requires a free [GBIF](https://www.gbif.org/) account.
@@ -30,7 +30,7 @@ python3 load_gbif_data_to_duckdb.py
 streamlit run app/app.py
 ```
 
-## Databases
+## Databases (How it works)
 
 | source | query | credentials requirements | data shaping |
 |:-:|---|:-:|---|
@@ -43,11 +43,11 @@ For portability, and so I can have near certainty that the app displays the same
 
 The Marine Regions database is queried for the geospatial polygon of the island of Great Britain. This information can be considered immutable within this project's scope and level of precision, and so if a file with the polygon data already locally exists, the local data is used. There are no freshness checks, although these can be implemented by recording the date of the most recent remote query. The polygon may be updated annualy, in case of changes in the island's coastline.
 
-## Data shaping
+## Data shaping (How it works)
 
 ### Extracting and loading:
 
-#### GBIF:
+#### GBIF
 - The data from GBIF is generally complete and consistent. 
 - I preselected, using the query from the GBIF database, rows without geospatial issues
 - There are clear data sampling artifacts like coordinates arranged neatly along a radius, but this spatial (in)accuracy is sufficiently small for general whale-watching purposes in open seas.
@@ -64,11 +64,22 @@ The Marine Regions database is queried for the geospatial polygon of the island 
 - DuckDB performs spatial joins of GBIF data with the polygon, which are displayed on the app
 - The app displays the probability of sighting species, on a given month, in a given polygon, by the month's average days with sighting.
 
-## Possible enhancements
+## Possible enhancements (What I would do next)
 
+- See [freshness and updates section](#Freshness_and_updates)
 - Include more species, specifically popular birds and national park wildlife. Categorise views by activity: birdwatching, boat tour, hiking.
 - Provide data about local related business and national parks.
 - Use custom tiles that include more interesting and pertinent information in the tile layer itself: [Dynamic Tile Service](https://github.com/federicotallis/Duckdb_Dynamic_Tile_Service/blob/main/Streamlit/app.py)
+
+## How this was made
+
+I coded this in Visual Studio Code and vim. Python environment set up in [a custom Ubuntu container](https://github.com/isklinger/container-image-systemd-ubuntu-xrdp). The Streamlit Folium tutorial by Randy Zwitch was used extensively as I have never used Streamlit or Folium before.
+
+### Use of AI (Where AI helped)
+
+No AI was used in the making of this project. None of the following: chat bots, large language models, GitHub Copilot, VS Code AI extensions, text generation, code generation, image generation.
+
+AI is a valuable research tool, but I chose to leave it out due to time constraints and my unfamiliarity with the subject: AI tools would have required many hours of finessing, which I couldn't spare from my 48-hour schedule for this project.
 
 ## License
 
