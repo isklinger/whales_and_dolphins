@@ -39,16 +39,24 @@ streamlit run app/app.py
 
 ## Data shaping
 
-Extracting and loading:
+### Extracting and loading:
 
-- The data from GBIF is generally complete and correct. Very few values have user-submitted info in the wrong field which can be detected by selecting distinct values and looking for outliers.
-- The data from Marine Regions is accurate and correct, but the polygons have to be simplified locally since they are too detailed to be used with the GBIF API. 
+#### GBIF:
+- The data from GBIF is generally complete and consistent. 
+- I preselected, using the query from the GBIF database, rows without geospatial issues
+- There are clear data sampling artifacts like coordinates arranged neatly along a radius, but this spatial (in)accuracy is sufficiently small for general whale-watching purposes in open seas.
+- Very few values have user-submitted info in the wrong field, which I detected and removed by selecting distinct values and looking for outliers.
 
-Transforming:
+#### Marine Regions
 
-- Create a polygon with a specified radius, around a coordinate pair given by user clicks on a map
-- Spatial join GBIF data with polygon
-- Provide probability of sighting species, on a given month, in a given polygon, by the month's average days with sighting.
+- The data from Marine Regions is, for the purposes of this project, completely accurate and correct.
+- I simplified the polygons returned by the database since they are too detailed to be used with the GBIF API. 
+
+### Transforming:
+
+- The Streamlit app, using DuckDB, creates a polygon with a specified radius, centered around a coordinate pair given by user clicks on the map.
+- DuckDB performs spatial joins of GBIF data with the polygon, which are displayed on the app
+- The app displays the probability of sighting species, on a given month, in a given polygon, by the month's average days with sighting.
 
 ## Possible enhancements
 
