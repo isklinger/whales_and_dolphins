@@ -39,21 +39,33 @@ streamlit run app/app.py
 
 ## Data shaping
 
-The data from GBIF is generally complete and correct. Very few values have user-submitted info in the wrong field which can be detected by selecting distinct values and looking for outliers.
+Extracting and loading:
 
-The data from Marine Regions is accurate and correct, but the polygons have to be simplified locally since they are too detailed to be used with the GBIF API. 
+- The data from GBIF is generally complete and correct. Very few values have user-submitted info in the wrong field which can be detected by selecting distinct values and looking for outliers.
+- The data from Marine Regions is accurate and correct, but the polygons have to be simplified locally since they are too detailed to be used with the GBIF API. 
 
+Transforming:
+
+- Create a polygon with a specified radius, around a coordinate pair given by user clicks on a map
+- Spatial join GBIF data with polygon
+- Provide probability of sighting species, on a given month, in a given polygon, by the month's average days with sighting.
 
 ## Possible enhancements
 
-- More species, specifically popular birds and national park wildlife. Categorise views by activity: birdwatching, boat tour, hiking.
-- Data about local related business and national parks
+- Include more species, specifically popular birds and national park wildlife. Categorise views by activity: birdwatching, boat tour, hiking.
+- Provide data about local related business and national parks.
 - Use custom tiles that include more interesting and pertinent information in the tile layer itself: [Dynamic Tile Service](https://github.com/federicotallis/Duckdb_Dynamic_Tile_Service/blob/main/Streamlit/app.py)
 
 ## License
 
-Python code © Isaac Klinger  
-Released under the [MIT](https://choosealicense.com/licenses/mit/)
+Tutorials © Stichting DuckDB Foundation  
+Released under the [MIT](https://choosealicense.com/licenses/mit/) license
+
+Tutorials © Randy Zwitch, creator of Streamlit Folium  
+Released under the MIT license
+
+All other code © Isaac Klinger  
+Released under the MIT license
 
 [GBIF - Global Biodiversity Information Facility](https://techdocs.gbif.org/en/openapi/  
 )  
