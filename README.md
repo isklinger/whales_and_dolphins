@@ -1,6 +1,6 @@
-# Cetacean Holiday (What I built and who for)
+## Cetacean Holiday (What I built and who for)
 
-View a selection of holiday destinations ranked by nearby cetacean sightings, with some statistics.
+View a selection of holiday destinations, or arbitrary localities, ranked by nearby cetacean sightings statistics.
 
 If you're planning whale- and dolphin-watching for your next holiday, this is for you!
 
