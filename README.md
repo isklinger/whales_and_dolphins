@@ -27,7 +27,8 @@ cd extract_and_transform
 python3 fetch_cetaceans_map_from_gbif_api.py
 # you will be prompted to wait until you receive an email from GBIF saying the download is ready
 python3 load_gbif_data_to_duckdb.py
-streamlit run app/app.py
+cd ../app
+streamlit run streamlit.py
 ```
 
 ## Databases (How it works)
@@ -55,13 +56,13 @@ The Marine Regions database is queried for the geospatial polygon of the island 
 
 #### Marine Regions
 
-- The data from Marine Regions is, for the purposes of this project, completely accurate and correct.
+- The data from Marine Regions is, for the purposes of this project, completely accurate and correct or the "ground truth".
 - I simplified the polygons returned by the database since they are too detailed to be used with the GBIF API. 
 
 ### Transforming:
 
-- The Streamlit app, using DuckDB, creates a polygon with a specified radius, centered around a coordinate pair given by user clicks on the map.
-- DuckDB performs spatial joins of GBIF data with the polygon, which are displayed on the app
+- The Streamlit app queries DuckDB for a polygon with a specified radius, centered around a coordinate pair given by user clicks on the map.
+- DuckDB performs spatial joins (intersects) of GBIF data with the polygon, which are displayed on the app.
 - The app displays the probability of sighting species, on a given month, in a given polygon, by the month's average days with sighting.
 
 ## Possible enhancements (What I would do next)
@@ -79,7 +80,7 @@ I coded this in Visual Studio Code and vim. Python environment set up in [a cust
 
 No AI was used in the making of this project. None of the following: chat bots, large language models, GitHub Copilot, VS Code AI extensions, text generation, code generation, image generation.
 
-AI is a valuable research tool, but I chose to leave it out due to time constraints and my unfamiliarity with the subject: AI tools would have required many hours of finessing, which I couldn't spare from my 48-hour schedule for this project.
+AI is a valuable research tool, but I chose to leave it out due to time constraints and my unfamiliarity with the subject: AI tools would have required many hours of finessing, which I couldn't spare from my two-day schedule for this project.
 
 ## License
 
