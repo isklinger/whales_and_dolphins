@@ -32,7 +32,7 @@ def duck():
 
     return duck
 
-def duck_circle(latitude, longitude):
+def duck_circle(coordinates_dict):
     """Return a circle around provided coordinates"""
     # query duckdb from python
     #https://github.com/duckdb/duckdb-blog-examples/blob/main/duckdb_streamlit/utils.py
@@ -43,93 +43,55 @@ def duck_circle(latitude, longitude):
     # inscribing a circle
     #https://duckdb.org/docs/2.0/core_extensions/spatial/functions#st_buffer
     #GEOMETRY ST_Buffer (geom GEOMETRY, distance DOUBLE, num_triangles INTEGER)
-
+    return '''
+    { "type": "FeatureCollection", "features": [ { "type": "Feature", "properties": { "layer": "Drawn Shapes", "isBuffer": false }, "geometry": { "type": "Point", "coordinates": [ -1.4941406250000002, 53.09754162819622 ] } }, { "type": "Feature", "properties": { "layer": "Drawn Shapes_buffer_20km", "isBuffer": true }, "geometry": { "type": "Polygon", "coordinates": [ [ [ -1.1945958403290746, 53.0971656535093 ], [ -1.2001115981138688, 53.13226935224857 ], [ -1.216953500782286, 53.166051103155084 ], [ -1.2444977087390368, 53.19720810648272 ], [ -1.2817015061883494, 53.224536083457494 ], [ -1.327140903852712, 53.246976609763536 ], [ -1.3790644320172967, 53.26365904940491 ], [ -1.4354612179172208, 53.27393528342674 ], [ -1.4941406250000002, 53.27740570094113 ], [ -1.5528200320827796, 53.27393528342674 ], [ -1.609216817982704, 53.26365904940491 ], [ -1.6611403461472884, 53.246976609763536 ], [ -1.7065797438116512, 53.224536083457494 ], [ -1.743783541260964, 53.19720810648272 ], [ -1.7713277492177146, 53.166051103155084 ], [ -1.7881696518861319, 53.13226935224857 ], [ -1.7936854096709263, 53.0971656535093 ], [ -1.7876904239686002, 53.06209057333404 ], [ -1.7704422471882388, 53.02839032155156 ], [ -1.7426265686942706, 52.99735529124763 ], [ -1.7053274349920995, 52.97017119275154 ], [ -1.6599833537402233, 52.94787454653408 ], [ -1.6083312878947051, 52.931314083803 ], [ -1.5523407843248762, 52.921119352791806 ], [ -1.4941406250000002, 52.91767755545131 ], [ -1.4359404656751245, 52.921119352791806 ], [ -1.3799499621052957, 52.931314083803 ], [ -1.3282978962597773, 52.94787454653408 ], [ -1.2829538150079012, 52.97017119275154 ], [ -1.24565468130573, 52.99735529124763 ], [ -1.217839002811762, 53.02839032155156 ], [ -1.2005908260314004, 53.06209057333404 ], [ -1.1945958403290746, 53.0971656535093 ] ] ] } } ]}
+    '''
     pass
-
-def new_marker():
-    pass
-
-@st.cache_data
-def _get_all_state_bounds() -> dict:
-    url = "https://raw.githubusercontent.com/PublicaMundi/MappingAPI/master/data/geojson/us-states.json"
-    return requests.get(url).json()
-
-
-@st.cache_data
-def get_state_bounds(state: str) -> dict:
-    data = _get_all_state_bounds()
-    state_entry = next(f for f in data["features"] if f["properties"]["name"] == state)
-    return {"type": "FeatureCollection", "features": [state_entry]}
-
-
-def get_state_from_lat_lon(lat: float, lon: float) -> str:
-    state_row = USA_DATA[
-        USA_DATA.latitude.between(lat - 0.0001, lat + 0.0001)
-        & USA_DATA.longitude.between(lon - 0.0001, lon + 0.0001)
-    ].iloc[0]
-    return state_row["state"]
-
-
-def get_population(state: str) -> int:
-    return USA_DATA.set_index("state").loc[state]["population"]
 
 
 def main():
     duckdb_conn = duck()
 
-    if "last_object_clicked" not in st.session_state:
-        st.session_state["last_object_clicked"] = None
-    if "selected_state" not in st.session_state:
-        st.session_state["selected_state"] = "Indiana"
 
-    bounds = get_state_bounds(st.session_state["selected_state"])
+    center = [51.51305718496589+4, -0.09419110869791583-5]
 
-    st.write(f"## {st.session_state['selected_state']}")
-    population = get_population(st.session_state["selected_state"])
-    st.write(f"### Population: {population:,}")
+    # https://docs.streamlit.io/develop/concepts/architecture/session-state#initialization
+    if 'last_clicked' not in st.session_state:
+        st.session_state['last_clicked'] = {'lat': center[0], 'lng': center[1]}
 
-    center = None
-    if st.session_state["last_object_clicked"]:
-        center = st.session_state["last_object_clicked"]
+    st.write(f"## {st.session_state['last_clicked']}")
+    bounds = duck_circle(st.session_state['last_clicked'])
 
-    m = folium.Map(location=[51.51305718496589+4,
-                            -0.09419110869791583-5],
+    m = folium.Map(location=center,
                 zoom_start=5)
 
-    # If you want to dynamically add or remove items from the map,
-    # add them to a FeatureGroup and pass it to st_folium
-    fg = folium.FeatureGroup(name="State bounds")
+    # FeatureGroup
+    fg = folium.FeatureGroup(name='clicks')
     fg.add_child(folium.features.GeoJson(bounds))
 
-    capitals = USA_DATA
 
-    for capital in capitals.itertuples():
-        fg.add_child(
-            folium.Marker(
-                location=[capital.latitude, capital.longitude],
-                popup=f"{capital.capital}, {capital.state}",
-                tooltip=f"{capital.capital}, {capital.state}",
-                icon=folium.Icon(color="green")
-                if capital.state == st.session_state["selected_state"]
-                else None,
-            )
-        )
-
-    out = st_folium(
+    map_cetaceans = st_folium(
         m,
         feature_group_to_add=fg,
         center=center,
         width=500,
         height=500,
+        returned_objects=['last_clicked', 'zoom', 'bounds', 'center', 'last_object_clicked'],
     )
 
-    if (
-        out["last_object_clicked"]
-        and out["last_object_clicked"] != st.session_state["last_object_clicked"]
-    ):
-        st.session_state["last_object_clicked"] = out["last_object_clicked"]
-        state = get_state_from_lat_lon(*out["last_object_clicked"].values())
-        st.session_state["selected_state"] = state
+    if all([map_cetaceans['last_clicked'],
+            map_cetaceans['last_clicked'] != st.session_state["last_clicked"]]):
+        # https://geemap.org/foliumap/#geemap.foliumap.Map.st_last_click
+        st.session_state['last_clicked'] = map_cetaceans['last_clicked']
+        fg.add_child(
+                    folium.Marker(
+                        location=[st.session_state['last_clicked']['lat'],
+                                  st.session_state['last_clicked']['lng']],
+                        popup='Something',
+                        tooltip=f"{st.session_state["last_clicked"]}",
+                        icon=folium.Icon(color="green")
+                        )
+                    )
         st.rerun()
 
 if __name__ == "__main__":
