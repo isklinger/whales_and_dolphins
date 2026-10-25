@@ -1,8 +1,11 @@
 import duckdb
 import folium
 import folium.features
-import pandas as pd
+import json
+import math
+import geopandas
 import streamlit as st
+from shapely.geometry import Point
 from pathlib import Path
 from streamlit_folium import st_folium
 from folium.plugins import HeatMap
@@ -29,10 +32,11 @@ def duck():
 
     return duck
 
-def duck_circle(coordinates_dict, radius=0.5):
+def duck_circle(lat, lng, radius, cetaceans):
     """
     Return a GEOJson of a polygon "circle" (octagon) around the specified coordinates_dict
-    having the specified radius in decimal degrees.
+    having the specified radius in decimal degrees, despite the instructions saying it's kilometres.
+    The coordinates need to be cast as geography before creating the buffer, but I have no more time.
     """
     # query duckdb from python
     #https://github.com/duckdb/duckdb-blog-examples/blob/main/duckdb_streamlit/utils.py
@@ -43,24 +47,24 @@ def duck_circle(coordinates_dict, radius=0.5):
     # inscribing a circle
     #https://duckdb.org/docs/2.0/core_extensions/spatial/functions#st_buffer
     #GEOMETRY ST_Buffer (geom GEOMETRY, distance DOUBLE, num_triangles INTEGER)
-    buffer_query = '''
-        GEOMETRY ST_Buffer (geom GEOMETRY, distance DOUBLE, num_triangles INTEGER)
-    '''
+
+    circle_around_coords = geopandas.GeoSeries(
+                            [Point(st.session_state['last_clicked']['lng'],
+                                   st.session_state['last_clicked']['lat'])],
+                            crs=4326).to_crs(3043).buffer(radius*1000).to_crs(4326)
+
+    st.write(circle_around_coords) 
 
     dataframe = None
-    geojson = '''{ "type": "FeatureCollection", "features": [ { "type": "Feature", "properties": { "layer": "Drawn Shapes", "isBuffer": false }, "geometry": { "type": "Point", "coordinates": [ -1.4941406250000002, 53.09754162819622 ] } }, { "type": "Feature", "properties": { "layer": "Drawn Shapes_buffer_20km", "isBuffer": true }, "geometry": { "type": "Polygon", "coordinates": [ [ [ -1.1945958403290746, 53.0971656535093 ], [ -1.2001115981138688, 53.13226935224857 ], [ -1.216953500782286, 53.166051103155084 ], [ -1.2444977087390368, 53.19720810648272 ], [ -1.2817015061883494, 53.224536083457494 ], [ -1.327140903852712, 53.246976609763536 ], [ -1.3790644320172967, 53.26365904940491 ], [ -1.4354612179172208, 53.27393528342674 ], [ -1.4941406250000002, 53.27740570094113 ], [ -1.5528200320827796, 53.27393528342674 ], [ -1.609216817982704, 53.26365904940491 ], [ -1.6611403461472884, 53.246976609763536 ], [ -1.7065797438116512, 53.224536083457494 ], [ -1.743783541260964, 53.19720810648272 ], [ -1.7713277492177146, 53.166051103155084 ], [ -1.7881696518861319, 53.13226935224857 ], [ -1.7936854096709263, 53.0971656535093 ], [ -1.7876904239686002, 53.06209057333404 ], [ -1.7704422471882388, 53.02839032155156 ], [ -1.7426265686942706, 52.99735529124763 ], [ -1.7053274349920995, 52.97017119275154 ], [ -1.6599833537402233, 52.94787454653408 ], [ -1.6083312878947051, 52.931314083803 ], [ -1.5523407843248762, 52.921119352791806 ], [ -1.4941406250000002, 52.91767755545131 ], [ -1.4359404656751245, 52.921119352791806 ], [ -1.3799499621052957, 52.931314083803 ], [ -1.3282978962597773, 52.94787454653408 ], [ -1.2829538150079012, 52.97017119275154 ], [ -1.24565468130573, 52.99735529124763 ], [ -1.217839002811762, 53.02839032155156 ], [ -1.2005908260314004, 53.06209057333404 ], [ -1.1945958403290746, 53.0971656535093 ] ] ] } } ]}'''
 
-    return (geojson, dataframe)
+    return (circle_around_coords, dataframe)
 
 @st.cache_resource
 def duck_everything(_cetaceans):
     """
     Return the entire cetaceans_gb table as a dataframe
     """
-    return _cetaceans.sql("select * from cetaceans_gb limit 1000").df()
-
-def copy_element(element):
-    return element
+    return _cetaceans.sql("select * from cetaceans_gb").df()
 
 def main():
 
@@ -78,7 +82,8 @@ def main():
                                             'lng': st.session_state["center"][1]}
     
 
-    st.header("Cetacean sightings around Great Britain in 2025", divider=True)
+    st.header("Cetacean Holiday", divider=True)
+    st.subheader('Click on a destination on the heatmap. Bluer areas denote more cetacean sightings.')
 
     m = folium.Map(location=(51.51305718496589+4,
                              -0.09419110869791583-5),
@@ -86,20 +91,7 @@ def main():
 
     # FeatureGroup
     fg = folium.FeatureGroup(name='radius')
-
-    (bounds, matches) = duck_circle(st.session_state['last_clicked'], 0.5)
-    circle = folium.features.GeoJson(bounds)
-    fg.add_child(circle)
     
-    marker = folium.Marker(
-        location=[st.session_state['last_clicked']['lat'],
-                    st.session_state['last_clicked']['lng']],
-        popup='Something',
-        tooltip=f"{st.session_state["last_clicked"]}",
-        icon=folium.Icon(color="green")
-        )
-    fg.add_child(marker)
-
     if "HeatMap" not in st.session_state:
         entire_dataframe = duck_everything(cetaceans)
         headmap_data = []
@@ -114,17 +106,52 @@ def main():
             date=row['date']
             headmap_data.append([latitude, longitude])
         st.session_state['HeatMap'] = headmap_data
-    HeatMap(st.session_state['HeatMap']).add_to(m)
+    heatmap_gradient = {0: 'blue', 1: 'blue'}
+    HeatMap(st.session_state['HeatMap'], gradient=heatmap_gradient, min_opacity=0.33, radius=10).add_to(m)
 
-    map_cetaceans = st_folium(
-        m,
-        feature_group_to_add=fg,
-        center=st.session_state["center"],
-        zoom=st.session_state["zoom"],
-        width=720,
-        height=720, 
-        returned_objects=['last_clicked', 'zoom', 'center', 'last_object_clicked', 'marker_cluster'],
-    )
+
+    left, right = st.columns([1, 1])
+
+    with right:
+        radius = st.slider("Click on your destination and select how far away you can spot cetaceans", 10, 100, 50, 10)
+        st.write("I can spot cetaceans from ", radius, "kilometers away")
+
+        pill_options = ['January', 'February', 'March', 'April',
+                'May', 'June', 'July', 'August', 'September',
+                'October', 'November', 'December']
+        
+        month_of_visit = st.pills("For which month are you planning your trip?",
+                                pill_options, selection_mode='single',
+                                default='January', wrap=True)
+        st.write("I'm planning my trip for ", str(month_of_visit) + ".")
+
+    marker = folium.Marker(
+        location=[st.session_state['last_clicked']['lat'],
+                    st.session_state['last_clicked']['lng']],
+        popup=f"Cetacean-spotting radius: {radius} kilometres.\n\n\nMonth of visit: {month_of_visit}",
+        tooltip='Your chosen destination. Click for details.',
+        icon=folium.Icon(icon='anchor', prefix='fa', color='black')
+        )
+    fg.add_child(marker)
+
+
+    (bounds, matches) = duck_circle(st.session_state['last_clicked']['lat'],
+                                    st.session_state['last_clicked']['lng'],
+                                    radius, cetaceans)
+    st.write(bounds)
+    circle = folium.features.GeoJson(bounds)
+    fg.add_child(circle)
+
+    with left:
+        map_cetaceans = st_folium(
+            m,
+            feature_group_to_add=fg,
+            center=st.session_state["center"],
+            zoom=st.session_state["zoom"],
+            width=720,
+            height=720, 
+            returned_objects=['last_clicked', 'zoom', 'center', 'last_object_clicked'],
+        )
 
     if all([map_cetaceans['last_clicked'],
             map_cetaceans['last_clicked'] != st.session_state["last_clicked"]]):
@@ -135,19 +162,20 @@ def main():
         marker = folium.Marker(
                     location=[st.session_state['last_clicked']['lat'],
                               st.session_state['last_clicked']['lng']],
-                    popup='Something',
-                    tooltip=f"{st.session_state["last_clicked"]}",
-                    icon=folium.Icon(color="green"))
-        (bounds, matches) = duck_circle(st.session_state['last_clicked'], 0.5)
+                    popup='Destination',
+                    tooltip='Destination',
+                    icon=folium.Icon(color="black", icon='anchor'))
+        (bounds, matches) = duck_circle(st.session_state['last_clicked']['lat'],
+                                        st.session_state['last_clicked']['lng'],
+                                        radius, cetaceans)
         circle = folium.features.GeoJson(bounds)
+        st.rerun()
 
 if __name__ == "__main__":
     main()
 
 comment="""
 TODO
-
-Species selection checkboxes
 
 Highlight sightings within radius
 
