@@ -21,9 +21,6 @@ API parameters useCamelCase
 
 Triple-double-quotes for comments
 Triple-single-quotes for string-literals
-
-All the # type=ignore comments are for the linter
-which fails to handle shapely types properly 
 """
 
 # Please register for a free account:
@@ -89,10 +86,10 @@ else:
 # Buffer GB polygon out into the seas by 0.8 of a degree
 gb_polygon_buffer = shapely.buffer(
                         shapely.geometry.Polygon(
-                            shapely.from_wkt(gb_polygon)).exterior, # type: ignore
+                            shapely.from_wkt(gb_polygon)).exterior,
                          0.8)
 gb_polygon = shapely.to_wkt(
-                shapely.union(shapely.geometry.Polygon(shapely.from_wkt(gb_polygon)), # type: ignore
+                shapely.union(shapely.geometry.Polygon(shapely.from_wkt(gb_polygon)),
                    gb_polygon_buffer))
 
 # I find GBIF requires polygons with around 200 or fewer vertices
@@ -100,18 +97,18 @@ gb_polygon = shapely.to_wkt(
 vertex_limit = 200
 
 gb_linear_ring = shapely.geometry.Polygon(
-    shapely.from_wkt(gb_polygon)).exterior # type: ignore
+    shapely.from_wkt(gb_polygon)).exterior
 
-if shapely.get_num_points(gb_linear_ring) > vertex_limit: # type: ignore
+if shapely.get_num_points(gb_linear_ring) > vertex_limit:
     coord_tolerance = [1*10**-4, 1*10**-3, 1*10**-2, 1*10**-1]
     # lattermost value of coord_tolerance gives highest acceptable tolerance (for me)
     while len(coord_tolerance) > 0:
         gb_linear_ring = shapely.simplify(
             shapely.geometry.Polygon(
-                shapely.from_wkt(gb_polygon)).exterior, # type: ignore
+                shapely.from_wkt(gb_polygon)).exterior,
                             tolerance=coord_tolerance.pop(0)
                         )
-        if shapely.get_num_points(gb_linear_ring) <= vertex_limit: # type: ignore
+        if shapely.get_num_points(gb_linear_ring) <= vertex_limit:
             break
         if len(coord_tolerance) == 0:
             error_message='''Couldn't meet GBIF geometry vertex requirements.'''
@@ -144,7 +141,7 @@ gbif_download_info = occurrences.download(['taxonKey = ' + str(cetacea_taxon_key
 
 if gbif_download_info[0][0:2] == '00':
     # very unreliable way to check whether the download key has been retrieved
-    gbif_key_filename = Path(__file__).parent  / 'data/raw/gbif_download_key.txt'
+    gbif_key_filename = Path(__file__).parent.parent  / 'data/raw/gbif_download_key.txt'
     with open(gbif_key_filename, 'w') as pgbif_key_file:
          pgbif_key_file.write(gbif_download_info[0])
     print('''

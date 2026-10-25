@@ -26,9 +26,9 @@ cp gbif_credentials.env.example ../gbif_credentials.env
 # gbif - requires username, password, and email
 
 # extract, transform, and load!
-python3 extract_and_transform/fetch_cetaceans_map_from_gbif_api.py
+python3 extract_and_transform/query_api.py
 # you will be prompted to wait until you receive an email from GBIF saying the download is ready
-python extract_and_transform/load_gbif_data_to_duckdb.py
+python3 extract_and_transform/load.py
 streamlit run streamlit.py
 ```
 
