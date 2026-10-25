@@ -50,28 +50,6 @@ def duck_circle(latitude, longitude):
     pass
 
 def new_marker():
-    """
-            # Place the markers with the popup labels and data
-        map.add_child(
-            folium.Marker(
-                location=coordinates,
-                popup="Year: "
-                + str(geo_df.Year[i])
-                + "<br>"
-                + "Name: "
-                + str(geo_df.Name[i])
-                + "<br>"
-                + "Country: "
-                + str(geo_df.Country[i])
-                + "<br>"
-                + "Type: "
-                + str(geo_df.Type[i])
-                + "<br>"
-                + "Coordinates: "
-                + str(geo_df_list[i]),
-                icon=folium.Icon(color="%s" % type_color),
-            )
-    """
     pass
 
 @st.cache_data
