@@ -55,8 +55,6 @@ def main():
     if 'last_clicked' not in st.session_state:
         st.session_state['last_clicked'] = {'lat': st.session_state["center"][0],
                                             'lng': st.session_state["center"][1]}
-
-    st.write(f"## {st.session_state['last_clicked']}")
     
 
     m = folium.Map(location=(51.51305718496589+4,
@@ -65,9 +63,22 @@ def main():
 
     # FeatureGroup
     fg = folium.FeatureGroup(name='radius')
+
     bounds = duck_circle(st.session_state['last_clicked'])
     fg.add_child(folium.features.GeoJson(bounds))
 
+    marker = folium.Marker(
+        location=[st.session_state['last_clicked']['lat'],
+                    st.session_state['last_clicked']['lng']],
+        popup='Something',
+        tooltip=f"{st.session_state["last_clicked"]}",
+        icon=folium.Icon(color="green")
+        )
+    fg.add_child(marker)
+
+
+    st.write(f"## {str(fg)}")
+    
     map_cetaceans = st_folium(
         m,
         feature_group_to_add=fg,
@@ -83,7 +94,13 @@ def main():
         # https://geemap.org/foliumap/#geemap.foliumap.Map.st_last_click
         st.session_state['last_clicked'] = map_cetaceans['last_clicked']
         st.session_state['center'] = (map_cetaceans['last_clicked']['lat'],
-                                      map_cetaceans['last_clicked']['lng'])
+                                      map_cetaceans['last_clicked']['lng'])        
+        marker = folium.Marker(
+                    location=[st.session_state['last_clicked']['lat'],
+                              st.session_state['last_clicked']['lng']],
+                    popup='Something',
+                    tooltip=f"{st.session_state["last_clicked"]}",
+                    icon=folium.Icon(color="green")) 
         st.rerun()
 
 if __name__ == "__main__":
