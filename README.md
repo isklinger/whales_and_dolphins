@@ -78,7 +78,7 @@ I coded this in Visual Studio Code and vim. Python environment set up in [a cust
 
 ### Use of AI (Where AI helped)
 
-No AI was used in the making of this project. None of the following: chat bots, large language models, GitHub Copilot, VS Code AI extensions, text generation, code generation, image generation.
+No AI was used in the making of this project. No chat bots. No large language models. No GitHub Copilot. No VS Code AI extensions. No text generation, no code generation, no image generation. No AI.
 
 AI is a valuable research tool, but I chose to leave it out due to time constraints and my unfamiliarity with the subject: AI tools would have required many hours of finessing, which I couldn't spare from my two-day schedule for this project.
 
