@@ -5,6 +5,7 @@ import pandas as pd
 import streamlit as st
 from pathlib import Path
 from streamlit_folium import st_folium
+from folium.plugins import HeatMap
 
 st.set_page_config(
     page_title="Whales and dolphins: extract, load, transform",
@@ -51,13 +52,16 @@ def duck_circle(coordinates_dict, radius=0.5):
 
     return (geojson, dataframe)
 
-
-def duck_everything(cetaceans):
+@st.cache_resource
+def duck_everything(_cetaceans):
     """
     Return the entire cetaceans_gb table as a dataframe
     """
-    return cetaceans.sql("select * from cetaceans_gb").df()
-    
+    return _cetaceans.sql("select * from cetaceans_gb limit 1000").df()
+
+def copy_element(element):
+    return element
+
 def main():
 
     cetaceans = duck()
@@ -74,6 +78,8 @@ def main():
                                             'lng': st.session_state["center"][1]}
     
 
+    st.header("Cetacean sightings around Great Britain in 2025", divider=True)
+
     m = folium.Map(location=(51.51305718496589+4,
                              -0.09419110869791583-5),
                     zoom_start=4)
@@ -81,9 +87,10 @@ def main():
     # FeatureGroup
     fg = folium.FeatureGroup(name='radius')
 
-    (bounds, matches) = duck_circle(st.session_state['last_clicked'], 25)
-    fg.add_child(folium.features.GeoJson(bounds))
-
+    (bounds, matches) = duck_circle(st.session_state['last_clicked'], 0.5)
+    circle = folium.features.GeoJson(bounds)
+    fg.add_child(circle)
+    
     marker = folium.Marker(
         location=[st.session_state['last_clicked']['lat'],
                     st.session_state['last_clicked']['lng']],
@@ -93,30 +100,30 @@ def main():
         )
     fg.add_child(marker)
 
-    entire_dataframe = duck_everything(cetaceans)
+    if "HeatMap" not in st.session_state:
+        entire_dataframe = duck_everything(cetaceans)
+        headmap_data = []
+        for index, row in entire_dataframe.iterrows():
+            year=row['year']
+            month=row['month']
+            day=row['day']
+            individual_count=row['individualCount']
+            common_name=row['commonName']
+            latitude=row['latitude']
+            longitude=row['longitude']
+            date=row['date']
+            headmap_data.append([latitude, longitude])
+        st.session_state['HeatMap'] = headmap_data
+    HeatMap(st.session_state['HeatMap']).add_to(m)
 
-    for index, row in entire_dataframe.iterrows():
-        year=row['year']
-        month=row['month']
-        day=row['day']
-        individual_count=row['individualCount']
-        sighting = folium.Marker(
-            location=[row['latitude'],
-                      row['longitude']],
-            popup='Something',
-            tooltip=f"{row['commonName'], row['date']}",
-            icon=folium.Icon(color="green")
-            )
-        fg.add_child(sighting)
-    
     map_cetaceans = st_folium(
         m,
         feature_group_to_add=fg,
         center=st.session_state["center"],
         zoom=st.session_state["zoom"],
-        width=500,
-        height=500,
-        returned_objects=['last_clicked', 'zoom', 'center', 'last_object_clicked'],
+        width=720,
+        height=720, 
+        returned_objects=['last_clicked', 'zoom', 'center', 'last_object_clicked', 'marker_cluster'],
     )
 
     if all([map_cetaceans['last_clicked'],
@@ -130,8 +137,9 @@ def main():
                               st.session_state['last_clicked']['lng']],
                     popup='Something',
                     tooltip=f"{st.session_state["last_clicked"]}",
-                    icon=folium.Icon(color="green")) 
-        st.rerun()
+                    icon=folium.Icon(color="green"))
+        (bounds, matches) = duck_circle(st.session_state['last_clicked'], 0.5)
+        circle = folium.features.GeoJson(bounds)
 
 if __name__ == "__main__":
     main()
