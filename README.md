@@ -37,6 +37,12 @@ streamlit run app/app.py
 |[GBIF](https://techdocs.gbif.org/en/openapi/)|sightings of cetaceans limited by year and polygon|free account|the query provides many columns that aren't used by the marts, so I didn't select them when loading into the local database|
 |[Marine Regions]( https://www.marineregions.org/gazetteer.php?p=webservices&type=rest)|(multi-)polygon by name|none|the query provides a multi-polygon, which I converted to a polygon and supplemented with a buffer|
 
+### Freshness and updates
+
+For portability, and so I can have near certainty that the app displays the same results everywhere, the GBIF query selects the years 2020 through 2025 each time. If up-to-date data is required, the query can be optimised in a straightforward way: query for the latest date in the local database, then querying GBIF for data from that day onward. If no data is found, query for data from five years ago onward.
+
+The Marine Regions database is queried for the geospatial polygon of the island of Great Britain. This information can be considered immutable within this project's scope and level of precision, and so if a file with the polygon data already locally exists, the local data is used. There are no freshness checks, although these can be implemented by recording the date of the most recent remote query. The polygon may be updated annualy, in case of changes in the island's coastline.
+
 ## Data shaping
 
 ### Extracting and loading:
