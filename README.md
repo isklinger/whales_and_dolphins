@@ -1,8 +1,8 @@
 ## Cetacean Holiday (What I built and who for)
 
-View arbitrary coordinates with nearby cetacean sightings statistics.
-
 If you're planning whale- and dolphin-watching for your next holiday, this is for you!
+
+View cetacean sightings statistics for an arbitrary radius around arbitrary coordinates.
 
 ## Usage (How to run it)
 
@@ -54,7 +54,8 @@ The Marine Regions database is queried for the geospatial polygon of the island 
 #### GBIF
 - The data from GBIF is generally complete and consistent. 
 - I preselected, using the query from the GBIF database, rows without geospatial issues.
-- There are clear data sampling artifacts like coordinates arranged neatly along a radius, but this spatial (in)accuracy is sufficiently small for general whale-watching purposes in open seas.
+- There are clear data sampling artifacts like coordinates arranged neatly along an arc, but this spatial (in)accuracy is sufficiently small for general whale-watching purposes in open seas.
+- When the field for "individual count" is empty, the count can be assumed to be one.
 
 #### Marine Regions
 
@@ -65,11 +66,12 @@ The Marine Regions database is queried for the geospatial polygon of the island 
 
 - The Streamlit app queries DuckDB with a coordinate pair generated when the user last clicks on the map.
 - DuckDB returns GBIF data within the specified radius from the coordinates, which is displayed on the app.
-- The app displays the probability of sighting cetaceans in the specified month within the given radius, by the number of distinct days with sightings of one or more cetaceans.
+- The app displays the probability of sighting cetaceans in the specified month within the given radius, by the number of distinct days with sightings of one or more cetaceans divided by the number of days in the specified month.
 
 ## Possible enhancements (What I would do next)
 
-- See [freshness and updates section](#freshness-and-updates)
+- Refactor the code and implement best practices; this is a messy proof-of-concept.
+- Implementing [freshness checks and table-union updates](#freshness-and-updates).
 - List popular destinations and sort them by count of nearby sightings.
 - List nearest popular destination when selecting a coordinate.
 - Filter sightings by species.
@@ -97,10 +99,9 @@ Released under the MIT license
 All other code © Isaac Klinger  
 Released under the MIT license
 
-[GBIF - Global Biodiversity Information Facility](https://techdocs.gbif.org/en/openapi/  
-)  
+[GBIF - Global Biodiversity Information Facility](https://techdocs.gbif.org/en/openapi/)  
 Free and open access to biodiversity data  
-Most entries released under the CC-BY-NC 4.0 license, some entries are under less strict licenses
+Most entries released under the CC-BY-NC 4.0 license, some entries are under less strict licenses.
 
 [Marine Regions](https://www.marineregions.org/gazetteer.php?p=webservices&type=rest)  
 A standard list of marine georeferenced place names and areas  
@@ -110,6 +111,6 @@ Released under the CC-BY 4.0 license
 
 Hi, I'm Isaac. I moved to London in early 2025, where I'm living with my wonderful wife who grew up in London.
 
-I've been using python for personal projects for many years. After attending a meetup at The Data School in mid-2026, I delved deeper into dbt and data analysis. I enjoy the modular and structured source-model-test design concept of dbt. Its clean design reminds me of the concepts behind python's syntax. I enjoy the visual and technical aspects of data analysis.
+After attending a meetup at The Data School in mid-2026, I delved deeper into data analysis and dbt. I enjoy the modular and structured source-model-test design concept of dbt. Its clean design reminds me of the concepts behind python's syntax. I enjoy the visual and technical aspects of data analysis.
 
 I'm employed as a datacenter system adminstrator for a company based in Soho, keeping installations of Debian, Nginx, Apache, MariaDB, and the sort humming along.
