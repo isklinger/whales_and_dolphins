@@ -125,7 +125,7 @@ def main():
     left, right = st.columns([1, 1])
 
     with right:
-        radius = st.slider("Click on your destination and select how far away you can spot cetaceans", 10, 100, 50, 10)
+        radius = st.slider("Click on your destination and select the distance from which you can spot cetaceans", 10, 100, 50, 10)
         st.write("I can spot cetaceans from ", radius, "kilometers away")
 
         pill_options = ['January', 'February', 'March', 'April',
