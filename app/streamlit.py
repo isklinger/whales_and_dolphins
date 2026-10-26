@@ -162,9 +162,12 @@ def main():
     with right:
         st.subheader('Probability of seeing one or more cetacean on a given day, ' +
                  'assuming a uniform distribution of sightings during the same month:')
-        st.write(str(
-                     int(100*float(matches['day'].nunique())/
-                     calendar.monthrange(2025, month_dict[month_of_visit])[1])) + '%')
+        try:
+            st.write(str(
+                        int(100*float(matches['day'].nunique())/
+                        calendar.monthrange(2025, month_dict[month_of_visit])[1])) + '%')
+        except Exception:
+            st.write('''0%''')
     st.write(matches)
 
     with left:
