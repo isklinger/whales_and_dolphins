@@ -72,12 +72,18 @@ The Marine Regions database is queried for the geospatial polygon of the island 
 
 ## Possible enhancements (What I would do next)
 
+Performance:
+
 - Refactor the code and implement best practices; this is a messy proof-of-concept.
-- Implementing [freshness checks and table-union updates](#freshness-and-updates).
+- Implement [freshness checks and table-union updates](#freshness-and-updates).
+
+Features:
+
 - List popular destinations and sort them by count of nearby sightings.
-- List nearest popular destination when selecting a coordinate.
+- List nearest city or large town when selecting a coordinate.
+- List months by sighting percentage for a given place and radius.
 - Filter sightings by species.
-- Tooltips for sighting instances.
+- Tooltips for sighting instances on map.
 - Include species outside cetaceans, specifically popular birds and national park wildlife.
 - Filter species by activity: birdwatching, boat tour, hiking.
 - Provide data about local related business and national parks.
@@ -115,4 +121,4 @@ Hi, I'm Isaac. I moved to London in early 2025, where I'm living with my wonderf
 
 After attending a meetup at The Data School in mid-2026, I delved deeper into data analysis and dbt. I enjoy the modular and structured source-model-test design concept of dbt. Its clean design reminds me of the concepts behind python's syntax. I enjoy the visual and technical aspects of data analysis.
 
-I'm employed as a datacenter system adminstrator for a company based in Soho, keeping installations of Debian, Nginx, Apache, MariaDB, and the sort humming along.
+I'm employed as a datacenter system administrator for a company based in Soho, keeping installations of Debian, Nginx, Apache, MariaDB, and the sort humming along.
