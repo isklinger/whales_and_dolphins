@@ -160,7 +160,7 @@ def main():
         "weight": 2})
     fg.add_child(circle)
     with right:
-        st.subheader('Probability of seeing one or more cetacean on a given day, ' +
+        st.subheader('Probability of seeing one or more cetaceans on a given day, ' +
                  'assuming a uniform distribution of sightings during the same month:')
         try:
             st.write(str(
