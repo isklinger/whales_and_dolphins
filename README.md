@@ -4,6 +4,8 @@ If you're planning whale- and dolphin-watching for your next holiday, this is fo
 
 View cetacean sightings statistics for an arbitrary radius around arbitrary coordinates.
 
+![Cetacean Holiday app screenshot](screenshot.png)
+
 ## Usage (How to run it)
 
 Tested in Python 3.14  

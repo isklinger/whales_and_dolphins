@@ -82,5 +82,5 @@ duck.close()
 print('''
 Data loaded! Run the app with:
 
-streamlit run streamlit.py
+streamlit run app/streamlit.py
 ''')

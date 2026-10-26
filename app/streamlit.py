@@ -161,7 +161,7 @@ def main():
     fg.add_child(circle)
     with right:
         st.subheader('Probability of seeing one or more cetacean on a given day, ' +
-                 'assuming uniform distribution of sightings:')
+                 'assuming a uniform distribution of sightings during the same month:')
         st.write(str(
                      int(100*float(matches['day'].nunique())/
                      calendar.monthrange(2025, month_dict[month_of_visit])[1])) + '%')

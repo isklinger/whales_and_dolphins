@@ -48,6 +48,12 @@ if load_dotenv(gazeteer_credentials) is False:
     print(error_message)
     raise Exception(error_message)
 
+print('''
+Querying the GBIF API might take a minute or two.
+
+''')
+
+
 # Check if there's a local copy of the polygon data, otherwise request and save data
 polygon_filename = Path(__file__).parent.parent / 'data/raw/great_britain_polygon.wkt'
 if os.path.isfile(polygon_filename) and os.access(polygon_filename, os.R_OK):
@@ -145,8 +151,8 @@ if gbif_download_info[0][0:2] == '00':
     with open(gbif_key_filename, 'w') as pgbif_key_file:
          pgbif_key_file.write(gbif_download_info[0])
     print('''
-GBIF download key: ''' + gbif_download_info[0] + '''
-Your download key has been recorded in "''' + gbif_key_filename + '''" and
+GBIF download key: ''' + str(gbif_download_info[0]) + '''
+Your download key has been recorded in "''' + str(gbif_key_filename) + '''" and
 you will receive an email from GBIF when your download is available.
 Run "load_gbif_data_to_duckdb.py" when it's available to load it into the database.
 ''')
