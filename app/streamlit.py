@@ -32,11 +32,11 @@ def duck():
 
     return duck
 
-def duck_circle(lat, lng, radius, cetaceans):
+def duck_circle(cetaceans, lng, lat, radius, month_of_visit='January'):
     """
-    Return a GEOJson of a polygon "circle" (octagon) around the specified coordinates_dict
-    having the specified radius in decimal degrees, despite the instructions saying it's kilometres.
-    The coordinates need to be cast as geography before creating the buffer, but I have no more time.
+    Return a GEOJson of a polygon-"circle" around the specified coordinates
+    having the specified radius in kilometres, and match all data points that
+    intersect the polygon's area from the local cetaceans_gb table.  
     """
     # query duckdb from python
     #https://github.com/duckdb/duckdb-blog-examples/blob/main/duckdb_streamlit/utils.py
@@ -49,14 +49,25 @@ def duck_circle(lat, lng, radius, cetaceans):
     #GEOMETRY ST_Buffer (geom GEOMETRY, distance DOUBLE, num_triangles INTEGER)
 
     circle_around_coords = geopandas.GeoSeries(
-                            [Point(st.session_state['last_clicked']['lng'],
-                                   st.session_state['last_clicked']['lat'])],
+                            [Point(lng,
+                                   lat)],
                             crs=4326).to_crs(3043).buffer(radius*1000).to_crs(4326)
 
-    st.write(circle_around_coords) 
-
-    dataframe = None
-
+    cetaceans.sql('''SET geometry_always_xy = true''')
+    dataframe = cetaceans.sql('''select
+                                    *,
+                                    st_distance_spheroid(
+                                        ST_Point(c.latitude, c.longitude),
+                                        ST_Point($lat, $lng)) as d
+                                    from cetaceans_gb as c
+                                    where d < $radius
+                                    and month = $month_of_visit
+                                    and year = 2025;''',
+                                    params={"lat": lat,
+                                            "lng": lng,
+                                            "radius": radius*1000,
+                                            "month_of_visit": month_of_visit}).df()
+    
     return (circle_around_coords, dataframe)
 
 @st.cache_resource
@@ -75,15 +86,13 @@ def main():
         st.session_state["center"] = (51.51305718496589+4, -0.09419110869791583-5)
     if "zoom" not in st.session_state:
         st.session_state["zoom"] = 6
-    if "markers" not in st.session_state:
-        st.session_state["markers"] = []
     if 'last_clicked' not in st.session_state:
         st.session_state['last_clicked'] = {'lat': st.session_state["center"][0],
                                             'lng': st.session_state["center"][1]}
     
 
     st.header("Cetacean Holiday", divider=True)
-    st.subheader('Click on a destination on the heatmap. Bluer areas denote more cetacean sightings.')
+    st.subheader('Click on a destination on the map. Blue areas denote more cetacean sightings.')
 
     m = folium.Map(location=(51.51305718496589+4,
                              -0.09419110869791583-5),
@@ -128,19 +137,26 @@ def main():
     marker = folium.Marker(
         location=[st.session_state['last_clicked']['lat'],
                     st.session_state['last_clicked']['lng']],
-        popup=f"Cetacean-spotting radius: {radius} kilometres.\n\n\nMonth of visit: {month_of_visit}",
+        popup=f"Cetacean-spotting radius: {radius} kilometres.\n\n\nMonth of visit: {month_of_visit}\n{st.session_state['last_clicked']['lng']}\n{st.session_state['last_clicked']['lat']}",
         tooltip='Your chosen destination. Click for details.',
         icon=folium.Icon(icon='anchor', prefix='fa', color='black')
         )
     fg.add_child(marker)
 
+    month_dict = {'January': 1, 'February': 2, 'March': 3, 'April': 4,
+                'May': 5, 'June': 6, 'July': 7, 'August': 8, 'September': 9,
+                'October': 10, 'November': 11, 'December': 12}
 
-    (bounds, matches) = duck_circle(st.session_state['last_clicked']['lat'],
+    (bounds, matches) = duck_circle(cetaceans,
                                     st.session_state['last_clicked']['lng'],
-                                    radius, cetaceans)
-    st.write(bounds)
-    circle = folium.features.GeoJson(bounds)
+                                    st.session_state['last_clicked']['lat'],
+                                    radius, month_dict[month_of_visit])
+    circle = folium.features.GeoJson(bounds, style_function=lambda feature: {
+        "fill": False,
+        "color": "black",
+        "weight": 2})
     fg.add_child(circle)
+    st.write(matches)
 
     with left:
         map_cetaceans = st_folium(
@@ -149,8 +165,8 @@ def main():
             center=st.session_state["center"],
             zoom=st.session_state["zoom"],
             width=720,
-            height=720, 
-            returned_objects=['last_clicked', 'zoom', 'center', 'last_object_clicked'],
+            height=600, 
+            returned_objects=['last_clicked', 'zoom', 'center'],
         )
 
     if all([map_cetaceans['last_clicked'],
@@ -165,11 +181,14 @@ def main():
                     popup='Destination',
                     tooltip='Destination',
                     icon=folium.Icon(color="black", icon='anchor'))
-        (bounds, matches) = duck_circle(st.session_state['last_clicked']['lat'],
+        (bounds, matches) = duck_circle(cetaceans,
                                         st.session_state['last_clicked']['lng'],
-                                        radius, cetaceans)
+                                        st.session_state['last_clicked']['lat'],
+                                        radius, month_of_visit)
         circle = folium.features.GeoJson(bounds)
         st.rerun()
+        st.write(matches)
+
 
 if __name__ == "__main__":
     main()
@@ -177,10 +196,10 @@ if __name__ == "__main__":
 comment="""
 TODO
 
-Highlight sightings within radius
+Sightings within radius
 
 Probability of sighting a species within radius in a given month:
 sum(distinct(sightings_by_days_of_month))/length_days(month)
 
-Map with hover tooltip that shows species, date, etc
+Hover tooltip that shows species, date, etc
 """
