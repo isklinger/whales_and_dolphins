@@ -1,10 +1,8 @@
+import calendar
 import duckdb
 import folium
 import folium.features
-import json
-import math
 import geopandas
-import pandas
 import streamlit as st
 from shapely.geometry import Point
 from pathlib import Path
@@ -32,6 +30,7 @@ def duck():
     duck.sql("load spatial")
 
     return duck
+
 
 def duck_circle(cetaceans, lng, lat, radius, month_of_visit='January'):
     """
@@ -71,7 +70,6 @@ def duck_circle(cetaceans, lng, lat, radius, month_of_visit='January'):
                                                 "month_of_visit": month_of_visit}).df()
     except Exception:
         dataframe = None
-    
     return (circle_around_coords, dataframe)
 
 @st.cache_resource
@@ -80,6 +78,7 @@ def duck_everything(_cetaceans):
     Return the entire cetaceans_gb table as a dataframe
     """
     return _cetaceans.sql("select * from cetaceans_gb").df()
+
 
 def main():
 
@@ -108,6 +107,7 @@ def main():
         entire_dataframe = duck_everything(cetaceans)
         headmap_data = []
         for index, row in entire_dataframe.iterrows():
+            # most of these values go unused since heatmap doesn't support tooltips 
             year=row['year']
             month=row['month']
             day=row['day']
@@ -160,9 +160,11 @@ def main():
         "weight": 2})
     fg.add_child(circle)
     with right:
-        st.write('Probability of seeing one or more cetacean on a given day, ' +
-                 'assuming uniform distribution of sightings:',
-                 str(int(100*float(matches['day'].nunique()/31))) + '%')
+        st.subheader('Probability of seeing one or more cetacean on a given day, ' +
+                 'assuming uniform distribution of sightings:')
+        st.write(str(
+                     int(100*float(matches['day'].nunique())/
+                     calendar.monthrange(2025, month_dict[month_of_visit])[1])) + '%')
     st.write(matches)
 
     with left:

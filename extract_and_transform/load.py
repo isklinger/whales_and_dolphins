@@ -62,8 +62,7 @@ select gbifID,
        eventDate as date,
        day,
        month,
-       year,
-       dateIdentified
+       year
 from read_csv(''' + """'""" + data_raw_str + pgbif_key + '''.csv')
 )
 
