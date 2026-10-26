@@ -4,6 +4,7 @@ import folium.features
 import json
 import math
 import geopandas
+import pandas
 import streamlit as st
 from shapely.geometry import Point
 from pathlib import Path
@@ -53,20 +54,23 @@ def duck_circle(cetaceans, lng, lat, radius, month_of_visit='January'):
                                    lat)],
                             crs=4326).to_crs(3043).buffer(radius*1000).to_crs(4326)
 
-    cetaceans.sql('''SET geometry_always_xy = true''')
-    dataframe = cetaceans.sql('''select
-                                    *,
-                                    st_distance_spheroid(
-                                        ST_Point(c.latitude, c.longitude),
-                                        ST_Point($lat, $lng)) as d
-                                    from cetaceans_gb as c
-                                    where d < $radius
-                                    and month = $month_of_visit
-                                    and year = 2025;''',
-                                    params={"lat": lat,
-                                            "lng": lng,
-                                            "radius": radius*1000,
-                                            "month_of_visit": month_of_visit}).df()
+    try:
+        cetaceans.sql('''SET geometry_always_xy = true''')
+        dataframe = cetaceans.sql('''select
+                                        *,
+                                        st_distance_spheroid(
+                                            ST_Point(c.latitude, c.longitude),
+                                            ST_Point($lat, $lng)) as d
+                                        from cetaceans_gb as c
+                                        where d < $radius
+                                        and month = $month_of_visit
+                                        and year = 2025;''',
+                                        params={"lat": lat,
+                                                "lng": lng,
+                                                "radius": radius*1000,
+                                                "month_of_visit": month_of_visit}).df()
+    except Exception:
+        dataframe = None
     
     return (circle_around_coords, dataframe)
 
@@ -88,11 +92,10 @@ def main():
         st.session_state["zoom"] = 6
     if 'last_clicked' not in st.session_state:
         st.session_state['last_clicked'] = {'lat': st.session_state["center"][0],
-                                            'lng': st.session_state["center"][1]}
-    
+                                            'lng': st.session_state["center"][1]}    
 
     st.header("Cetacean Holiday", divider=True)
-    st.subheader('Click on a destination on the map. Blue areas denote more cetacean sightings.')
+    st.subheader('Blue areas denote more cetacean sightings.')
 
     m = folium.Map(location=(51.51305718496589+4,
                              -0.09419110869791583-5),
@@ -145,7 +148,7 @@ def main():
 
     month_dict = {'January': 1, 'February': 2, 'March': 3, 'April': 4,
                 'May': 5, 'June': 6, 'July': 7, 'August': 8, 'September': 9,
-                'October': 10, 'November': 11, 'December': 12}
+                'October': 10, 'November': 11, 'December': 12, None: 0}
 
     (bounds, matches) = duck_circle(cetaceans,
                                     st.session_state['last_clicked']['lng'],
@@ -156,6 +159,10 @@ def main():
         "color": "black",
         "weight": 2})
     fg.add_child(circle)
+    with right:
+        st.write('Probability of seeing one or more cetacean on a given day, ' +
+                 'assuming uniform distribution of sightings:',
+                 str(int(100*float(matches['day'].nunique()/31))) + '%')
     st.write(matches)
 
     with left:
@@ -187,8 +194,6 @@ def main():
                                         radius, month_of_visit)
         circle = folium.features.GeoJson(bounds)
         st.rerun()
-        st.write(matches)
-
 
 if __name__ == "__main__":
     main()
