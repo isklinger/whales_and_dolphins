@@ -76,6 +76,7 @@ Performance:
 
 - Refactor the code and implement best practices; this is a messy proof-of-concept.
 - Implement [freshness checks and table-union updates](#freshness-and-updates).
+- Output the percentage in bigger text, and implement general visual improvements.
 
 Features:
 
