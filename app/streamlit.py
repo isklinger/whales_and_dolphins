@@ -199,14 +199,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-comment="""
-TODO
-
-Sightings within radius
-
-Probability of sighting a species within radius in a given month:
-sum(distinct(sightings_by_days_of_month))/length_days(month)
-
-Hover tooltip that shows species, date, etc
-"""
