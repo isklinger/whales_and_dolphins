@@ -1,6 +1,6 @@
 ## Cetacean Holiday (What I built and who for)
 
-View a selection of holiday destinations, or arbitrary localities, ranked by nearby cetacean sightings statistics.
+View arbitrary coordinates with nearby cetacean sightings statistics.
 
 If you're planning whale- and dolphin-watching for your next holiday, this is for you!
 
@@ -55,7 +55,6 @@ The Marine Regions database is queried for the geospatial polygon of the island 
 - The data from GBIF is generally complete and consistent. 
 - I preselected, using the query from the GBIF database, rows without geospatial issues.
 - There are clear data sampling artifacts like coordinates arranged neatly along a radius, but this spatial (in)accuracy is sufficiently small for general whale-watching purposes in open seas.
-- Very few values have user-submitted info in the wrong field, which I detected and removed by selecting distinct values for specific columns and looking for outliers.
 
 #### Marine Regions
 
@@ -64,16 +63,20 @@ The Marine Regions database is queried for the geospatial polygon of the island 
 
 ### Transforming:
 
-- The Streamlit app queries DuckDB for a polygon with a specified radius, centered around a coordinate pair given by user clicks on the map.
-- DuckDB performs spatial joins (intersects) of GBIF data with the polygon, which are displayed on the app.
-- The app displays the probability of sighting species, on a given month, in a given polygon, by the month's average days with sighting.
+- The Streamlit app queries DuckDB with a coordinate pair generated when the user last clicks on the map.
+- DuckDB returns GBIF data within the specified radius from the coordinates, which is displayed on the app.
+- The app displays the probability of sighting cetaceans in the specified month within the given radius, by the number of distinct days with sightings of one or more cetaceans.
 
 ## Possible enhancements (What I would do next)
 
 - See [freshness and updates section](#freshness-and-updates)
-- Include more species, specifically popular birds and national park wildlife. Categorise views by activity: birdwatching, boat tour, hiking.
+- List popular destinations and sort them by count of nearby sightings.
+- List nearest popular destination when selecting a coordinate.
+- Filter sightings by species.
+- Tooltips for sighting instances.
+- Include species outside cetaceans, specifically popular birds and national park wildlife.
+- Filter species by activity: birdwatching, boat tour, hiking.
 - Provide data about local related business and national parks.
-- Use custom tiles that include more interesting and pertinent information in the tile layer itself: [Dynamic Tile Service](https://github.com/federicotallis/Duckdb_Dynamic_Tile_Service/blob/main/Streamlit/app.py)
 
 ## How this was made
 
@@ -81,11 +84,9 @@ I coded this in Visual Studio Code and vim. Python environment set up in [a cust
 
 ### Use of AI (Where AI helped)
 
-No AI was used in the making of this project. No chat bots. No large language models. No GitHub Copilot. No VS Code AI extensions. No text generation, no code generation, no image generation. No AI.
+No AI was used in the making of this project.
 
-AI is a valuable research tool, but I chose to leave it out due to time constraints and my unfamiliarity with the subject: AI tools would have required many hours of finessing, which I couldn't spare from my two-day schedule for this project.
-
-## License
+## Licenses
 
 Tutorials © Stichting DuckDB Foundation  
 Released under the [MIT](https://choosealicense.com/licenses/mit/) license
