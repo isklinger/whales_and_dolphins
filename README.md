@@ -92,11 +92,11 @@ Features:
 
 ## How this was made
 
-I coded this in Visual Studio Code and vim. Python environment set up in [a custom Ubuntu container](https://github.com/isklinger/container-image-systemd-ubuntu-xrdp). The Streamlit Folium tutorial by Randy Zwitch was used extensively as I have never used Streamlit or Folium before.
+I coded this in Visual Studio Code and vim. I set up a python environment in [a custom Ubuntu container](https://github.com/isklinger/container-image-systemd-ubuntu-xrdp), and tested on macOS 27. The Streamlit Folium tutorial by Randy Zwitch was used extensively as I have never used Streamlit or Folium before.
 
 ### Use of AI (Where AI helped)
 
-No AI was used in the making of this project.
+No AI was used in the process of researching, coding, and documenting this project. This is an all-natural project.
 
 ## Licenses
 
