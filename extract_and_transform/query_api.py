@@ -154,7 +154,7 @@ if gbif_download_info[0][0:2] == '00':
 GBIF download key: ''' + str(gbif_download_info[0]) + '''
 Your download key has been recorded in "''' + str(gbif_key_filename) + '''" and
 you will receive an email from GBIF when your download is available.
-Run "load_gbif_data_to_duckdb.py" when it's available to load it into the database.
+After you receive the emaol, run "python3 extract_and_transform/load.py"
 ''')
 else:
     print('''Failed to retrieve download key.''')
