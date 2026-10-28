@@ -56,7 +56,7 @@ The Marine Regions database is queried for the geospatial polygon of the island 
 ### Extracting and loading:
 
 #### GBIF
-- The rows from the GBIF database are generally complete and consistent.
+- The rows from the GBIF database are generally complete and consistent. There is a unique index for each row.
 - I selected rows without geospatial issues using a query parameter for the GBIF API.
 - There are clear data sampling artifacts like coordinates arranged neatly along an arc, but this spatial (in)accuracy is sufficiently small for general whale-watching purposes in open seas.
 - When the field for "individual count" is empty, the count can be assumed to be one.
@@ -71,6 +71,7 @@ The Marine Regions database is queried for the geospatial polygon of the island 
 - The Streamlit app locally queries DuckDB with a coordinate pair generated when the user last clicks on the map.
 - DuckDB returns the locally stored GBIF data within the specified radius from the coordinates, which is displayed on the app.
 - The app displays the probability of sighting cetaceans in the specified month within the given radius, by the number of distinct days with sightings of one or more cetaceans divided by the number of days in the specified month.
+- Duplicate reports of the same sighting do not affect the analysis since it only accounts for days with sightings, not number of sightings or number of individual specimens sighted.
 
 ## Possible enhancements (What I would do next)
 
@@ -78,17 +79,18 @@ Performance:
 
 - Refactor the code and implement best practices; this is a messy proof-of-concept.
 - Store SQL queries in SQL files, instead of inline with the python code.
-- Implement [freshness checks and table-union updates](#freshness-and-updates).
 - Output the percentage in bigger text, and implement general visual improvements.
+- Implement [freshness checks and table-union updates](#freshness-and-updates).
+- Implement [duplicate filtering by vicinity in time and space](#transforming) if more fine-grained statistics are required.
 - Migrate to dbt.
 
 Features:
 
 - List popular destinations and sort them by count of nearby sightings.
 - List nearest city or large town when selecting a coordinate.
-- List months by sighting percentage for a given place and radius.
+- List all months by sighting percentage for a given place and radius.
 - Filter sightings by species.
-- Tooltips for sighting instances on map.
+- Show a tooltip when selecting a sighting instance on map, giving details about the sighting.
 - Include species outside cetaceans, specifically popular birds and national park wildlife.
 - Filter species by activity: birdwatching, boat tour, hiking.
 - Provide data about local related business and national parks.
