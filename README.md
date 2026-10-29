@@ -79,7 +79,7 @@ Performance:
 
 - Refactor the code and implement best practices; this is a messy proof-of-concept.
 - Store SQL queries in SQL files, instead of inline with the python code.
-- Look up common name on execution; the local database doesn't need to contain both scientific name and common name, only the more precise of the two. Similarly, the database can store GBIF taxon codes instead of scientific name, use district codes for districts, and so on, and look up the codes on app execution, which will optimise database size for a minor app runtime dictionary lookup cost.
+- Use dictionaries: the local database doesn't need to contain both scientific name and common name, only the more precise of the two. Similarly, the database can store GBIF taxon codes instead of the scientific name, use district codes for districts, and so on, and look up the codes on app execution, which will optimise database size at a small cost of a minor app runtime dictionary lookup.
 - Output the percentage in bigger text, and implement general visual improvements.
 - Implement [freshness checks and table-union updates](#freshness-and-updates).
 - Implement [duplicate filtering by vicinity in time and space](#transforming) if more fine-grained statistics are required.
