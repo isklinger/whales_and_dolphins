@@ -154,7 +154,7 @@ if gbif_download_info[0][0:2] == '00':
 GBIF download key: ''' + str(gbif_download_info[0]) + '''
 Your download key has been recorded in "''' + str(gbif_key_filename) + '''" and
 you will receive an email from GBIF when your download is available.
-After you receive the emaol, run "python3 extract_and_transform/load.py"
+After you receive the email, run "python3 extract_and_transform/load.py"
 ''')
 else:
     print('''Failed to retrieve download key.''')
